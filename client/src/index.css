@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap");
 
 @custom-variant dark (&:is(.dark *));
 
@@ -119,6 +120,16 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: "Inter", sans-serif;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-weight: 700;
   }
   button:not(:disabled),
   [role="button"]:not([aria-disabled="true"]),
@@ -160,6 +171,73 @@
     min-width: 0;
   }
 
+  /* Typography */
+  .text-heading-1 {
+    @apply text-3xl font-bold tracking-tight;
+  }
+
+  .text-heading-2 {
+    @apply text-2xl font-bold tracking-tight;
+  }
+
+  .text-heading-3 {
+    @apply text-xl font-semibold tracking-tight;
+  }
+
+  .text-body-large {
+    @apply text-base font-normal leading-relaxed;
+  }
+
+  .text-body-small {
+    @apply text-sm font-normal leading-relaxed;
+  }
+
+  /* Card styles */
+  .card-base {
+    @apply rounded-lg border border-border bg-card p-4 shadow-sm transition-smooth;
+  }
+
+  .card-hover {
+    @apply card-base hover:shadow-md hover:border-primary/20 cursor-pointer;
+  }
+
+  /* Button styles */
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-lg bg-secondary px-4 py-2 font-medium text-secondary-foreground transition-colors hover:bg-secondary/80 disabled:opacity-50;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center rounded-lg px-4 py-2 font-medium transition-colors hover:bg-secondary disabled:opacity-50;
+  }
+
+  /* Input styles */
+  .input-base {
+    @apply rounded-lg border border-border bg-input px-3 py-2 text-sm placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary;
+  }
+
+  /* Badge */
+  .badge {
+    @apply inline-flex items-center rounded-full bg-secondary px-2.5 py-0.5 text-xs font-medium text-secondary-foreground;
+  }
+
+  .badge-primary {
+    @apply bg-primary/10 text-primary;
+  }
+
+  /* Divider */
+  .divider {
+    @apply h-px bg-border;
+  }
+
+  /* Transition utility */
+  .transition-smooth {
+    @apply transition-all duration-200 ease-in-out;
+  }
+
   @media (min-width: 640px) {
     .container {
       padding-left: 1.5rem; /* 24px - tablet padding */
@@ -174,4 +252,29 @@
       max-width: 1280px; /* Standard content width */
     }
   }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground));
+}
+
+/* Selection */
+::selection {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
 }
