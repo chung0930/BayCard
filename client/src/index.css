@@ -194,7 +194,8 @@
 
   /* Card styles */
   .card-base {
-    @apply rounded-lg border border-border bg-card p-4 shadow-sm transition-smooth;
+    @apply rounded-lg border border-border bg-card p-4 shadow-sm;
+    transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .card-hover {
@@ -235,7 +236,9 @@
 
   /* Transition utility */
   .transition-smooth {
-    @apply transition-all duration-200 ease-in-out;
+    @apply transition-all;
+    transition-duration: 200ms;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   @media (min-width: 640px) {
