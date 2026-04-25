@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BayCard</title>
+    <title>BayCard - 社群討論平台</title>
     <style>
         * {
             margin: 0;
@@ -15,6 +15,14 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
             background-color: #f5f5f5;
             color: #333;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
         }
 
         header {
@@ -50,12 +58,10 @@
         nav button, nav a {
             background: none;
             border: none;
-            text-decoration: none;
             color: #666;
-            font-size: 14px;
             cursor: pointer;
-            transition: color 0.3s;
-            padding: 0;
+            font-size: 14px;
+            padding: 8px 12px;
         }
 
         nav button:hover, nav a:hover {
@@ -63,46 +69,115 @@
         }
 
         .btn-primary {
-            background: #000 !important;
-            color: white !important;
-            padding: 8px 16px !important;
-            border-radius: 4px !important;
+            background: #000;
+            color: white;
+            border-radius: 4px;
         }
 
         .btn-primary:hover {
-            background: #333 !important;
+            background: #333;
         }
 
         .btn-secondary {
-            background: #666 !important;
-            color: white !important;
-            padding: 8px 16px !important;
-            border-radius: 4px !important;
+            background: #f0f0f0;
+            color: #333;
+            border-radius: 4px;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 16px;
+            padding: 16px;
+        }
+
+        .auth-page {
+            max-width: 400px;
+            margin: 60px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .auth-page h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 150px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: #000;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .submit-btn:hover {
+            background: #333;
+        }
+
+        .toggle-link {
+            color: #0066cc;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .toggle-link:hover {
+            color: #0052a3;
         }
 
         .main {
             display: grid;
-            grid-template-columns: 1fr 200px;
-            gap: 16px;
-            margin-top: 16px;
+            grid-template-columns: 1fr 250px;
+            gap: 20px;
         }
 
-        .boards-sidebar {
+        .content {
             background: white;
             border-radius: 8px;
-            padding: 16px;
-            height: fit-content;
-            position: sticky;
-            top: 70px;
+            padding: 20px;
         }
 
-        .boards-sidebar h3 {
+        .sidebar {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .sidebar h3 {
             font-size: 14px;
             font-weight: bold;
             margin-bottom: 12px;
@@ -113,56 +188,44 @@
             border-bottom: 1px solid #f0f0f0;
         }
 
-        .board-item:last-child {
-            border-bottom: none;
-        }
-
         .board-item a {
+            color: #0066cc;
             text-decoration: none;
-            color: #666;
-            display: block;
-            padding: 8px 0;
-            font-size: 13px;
-            transition: color 0.3s;
             cursor: pointer;
+            font-size: 14px;
         }
 
         .board-item a:hover {
-            color: #000;
-        }
-
-        .content {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
+            text-decoration: underline;
         }
 
         .article-card {
-            background: white;
+            border: 1px solid #e0e0e0;
             border-radius: 8px;
             padding: 16px;
-            border: 1px solid #e0e0e0;
-            transition: box-shadow 0.3s;
+            margin-bottom: 12px;
             cursor: pointer;
+            transition: box-shadow 0.2s;
         }
 
         .article-card:hover {
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         .article-board {
             display: inline-block;
             background: #f0f0f0;
+            color: #666;
             padding: 4px 8px;
             border-radius: 4px;
             font-size: 12px;
-            color: #666;
+            margin-bottom: 8px;
         }
 
         .article-title {
             font-size: 16px;
             font-weight: bold;
-            margin: 8px 0;
+            margin-bottom: 8px;
             color: #000;
         }
 
@@ -170,7 +233,7 @@
             font-size: 14px;
             color: #666;
             margin-bottom: 12px;
-            line-height: 1.5;
+            line-height: 1.4;
         }
 
         .article-footer {
@@ -183,135 +246,52 @@
 
         .article-stats {
             display: flex;
-            gap: 16px;
-        }
-
-        .create-article-btn {
-            background: #000;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 4px;
-            font-size: 14px;
-            cursor: pointer;
-            margin-bottom: 16px;
-            transition: background 0.3s;
-        }
-
-        .create-article-btn:hover {
-            background: #333;
-        }
-
-        .page {
-            display: none;
-        }
-
-        .page.active {
-            display: block;
-        }
-
-        .auth-page {
-            background: white;
-            border-radius: 8px;
-            padding: 40px;
-            max-width: 400px;
-            margin: 60px auto;
-            text-align: center;
-        }
-
-        .auth-page h1 {
-            font-size: 28px;
-            margin-bottom: 24px;
-        }
-
-        .auth-page .form-group {
-            margin-bottom: 16px;
-            text-align: left;
-        }
-
-        .auth-page label {
-            display: block;
-            font-size: 14px;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-
-        .auth-page input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #e0e0e0;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-
-        .auth-page .submit-btn {
-            width: 100%;
-            background: #000;
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 4px;
-            font-size: 14px;
-            cursor: pointer;
-            transition: background 0.3s;
-            margin-bottom: 12px;
-        }
-
-        .auth-page .submit-btn:hover {
-            background: #333;
-        }
-
-        .auth-page .toggle-link {
-            color: #666;
-            font-size: 14px;
-            cursor: pointer;
-            text-decoration: underline;
-        }
-
-        .auth-page .toggle-link:hover {
-            color: #000;
+            gap: 12px;
         }
 
         .article-detail {
             background: white;
             border-radius: 8px;
             padding: 24px;
-            margin-bottom: 16px;
         }
 
         .article-detail h1 {
-            font-size: 28px;
-            margin-bottom: 16px;
+            font-size: 24px;
+            margin-bottom: 12px;
         }
 
-        .article-detail .meta {
+        .meta {
             display: flex;
             gap: 16px;
-            margin-bottom: 24px;
-            font-size: 14px;
-            color: #666;
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e0e0e0;
         }
 
-        .article-detail .content {
-            font-size: 16px;
-            line-height: 1.8;
-            margin-bottom: 24px;
+        .content {
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: #333;
         }
 
         .comments-section {
             background: white;
             border-radius: 8px;
-            padding: 24px;
+            padding: 20px;
+            margin-top: 20px;
         }
 
         .comments-section h2 {
-            font-size: 18px;
+            font-size: 16px;
             margin-bottom: 16px;
         }
 
         .comment {
             border-bottom: 1px solid #f0f0f0;
-            padding: 16px 0;
+            padding: 12px 0;
         }
 
         .comment:last-child {
@@ -319,21 +299,101 @@
         }
 
         .comment-author {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 8px;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 4px;
         }
 
         .comment-content {
             font-size: 14px;
             color: #333;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
         }
 
         .comment-time {
             font-size: 12px;
             color: #999;
+        }
+
+        .create-article-btn {
+            width: 100%;
+            background: #000;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .create-article-btn:hover {
+            background: #333;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+
+        .success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+
+        .profile-section {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .profile-section h2 {
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+
+        .profile-item {
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .profile-item strong {
+            color: #666;
+        }
+
+        .avatar-upload {
+            margin-bottom: 16px;
+        }
+
+        .avatar-preview {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+
+        .avatar-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .back-btn {
@@ -350,76 +410,15 @@
             background: #f5f5f5;
         }
 
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 14px;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
-            width: 100%;
-            padding: 8px 12px;
-            border: 1px solid #e0e0e0;
-            border-radius: 4px;
-            font-size: 14px;
-            font-family: inherit;
-        }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 200px;
-        }
-
-        .submit-btn {
-            background: #000;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 4px;
-            font-size: 14px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .submit-btn:hover {
-            background: #333;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 40px 16px;
-            color: #999;
-        }
-
         .empty-state {
             text-align: center;
-            padding: 40px 16px;
+            padding: 40px;
             color: #999;
         }
 
-        .error {
-            background: #fee;
-            border: 1px solid #fcc;
-            color: #c00;
-            padding: 12px 16px;
-            border-radius: 4px;
-            margin-bottom: 16px;
-        }
-
-        .success {
-            background: #efe;
-            border: 1px solid #cfc;
-            color: #060;
-            padding: 12px 16px;
-            border-radius: 4px;
-            margin-bottom: 16px;
+        .empty-state h2 {
+            font-size: 18px;
+            margin-bottom: 8px;
         }
 
         @media (max-width: 768px) {
@@ -427,17 +426,17 @@
                 grid-template-columns: 1fr;
             }
 
-            .boards-sidebar {
+            .sidebar {
                 display: none;
             }
 
             nav {
-                gap: 12px;
+                gap: 10px;
             }
 
-            .auth-page {
-                padding: 24px;
-                margin: 40px auto;
+            nav button, nav a {
+                padding: 4px 8px;
+                font-size: 12px;
             }
         }
     </style>
@@ -446,12 +445,11 @@
     <header id="header" style="display: none;">
         <div class="header-container">
             <div class="logo">BayCard</div>
-            <nav id="nav-menu">
+            <nav>
                 <button onclick="showPage('home')">首頁</button>
-                <button onclick="showPage('search')">搜尋</button>
                 <button onclick="showPage('profile')">個人</button>
                 <button class="btn-primary" onclick="showPage('create')">+ 發布</button>
-                <button class="btn-secondary" id="logout-btn" onclick="logout()">登出</button>
+                <button class="btn-secondary" onclick="logout()">登出</button>
             </nav>
         </div>
     </header>
@@ -465,7 +463,7 @@
                 <form onsubmit="handleLogin(event)">
                     <div class="form-group">
                         <label>電子郵件</label>
-                        <input type="email" id="login-email" required placeholder="輸入你的電子郵件">
+                        <input type="email" id="login-email" required placeholder="輸入電子郵件">
                     </div>
                     <div class="form-group">
                         <label>密碼</label>
@@ -473,7 +471,7 @@
                     </div>
                     <button type="submit" class="submit-btn">登入</button>
                 </form>
-                <p style="color: #666; font-size: 14px;">
+                <p style="color: #666; font-size: 14px; margin-top: 16px;">
                     還沒有帳號？<span class="toggle-link" onclick="showPage('register')">立即註冊</span>
                 </p>
             </div>
@@ -503,7 +501,7 @@
                     </div>
                     <button type="submit" class="submit-btn">註冊</button>
                 </form>
-                <p style="color: #666; font-size: 14px;">
+                <p style="color: #666; font-size: 14px; margin-top: 16px;">
                     已有帳號？<span class="toggle-link" onclick="showPage('login')">立即登入</span>
                 </p>
             </div>
@@ -518,70 +516,57 @@
                         <div class="loading">載入文章中...</div>
                     </div>
                 </div>
-
-                <div class="boards-sidebar">
+                <div class="sidebar">
                     <h3>看板</h3>
-                    <div id="boards-container"></div>
+                    <div id="boards-container">
+                        <div style="color: #999; font-size: 12px;">載入中...</div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- 文章詳情 -->
-        <div id="article-detail" class="page">
+        <!-- 文章詳情頁 -->
+        <div id="article" class="page">
             <button class="back-btn" onclick="showPage('home')">← 返回</button>
             <div id="article-content"></div>
         </div>
 
-        <!-- 發布文章 -->
+        <!-- 發布文章頁 -->
         <div id="create" class="page">
             <button class="back-btn" onclick="showPage('home')">← 返回</button>
-            <div style="background: white; border-radius: 8px; padding: 24px;">
-                <h1 style="margin-bottom: 24px;">發布文章</h1>
-                <div id="create-message"></div>
-                <form id="create-form" onsubmit="submitArticle(event)">
+            <div class="content">
+                <h2 style="margin-bottom: 20px;">發布文章</h2>
+                <form onsubmit="submitArticle(event)">
                     <div class="form-group">
-                        <label>標題 *</label>
-                        <input type="text" id="title" required placeholder="輸入文章標題">
-                    </div>
-                    <div class="form-group">
-                        <label>看板 *</label>
+                        <label>看板</label>
                         <select id="board" required>
-                            <option value="">載入看板中...</option>
+                            <option value="">選擇看板</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>內容 *</label>
+                        <label>標題</label>
+                        <input type="text" id="title" required placeholder="輸入文章標題">
+                    </div>
+                    <div class="form-group">
+                        <label>內容</label>
                         <textarea id="content" required placeholder="輸入文章內容"></textarea>
                     </div>
-                    <button type="submit" class="submit-btn">發布文章</button>
+                    <button type="submit" class="submit-btn">發布</button>
                 </form>
-            </div>
-        </div>
-
-        <!-- 搜尋 -->
-        <div id="search" class="page">
-            <div class="main">
-                <div class="content">
-                    <div style="background: white; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
-                        <input type="text" id="search-input" placeholder="搜尋文章..." style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 14px;" onkeyup="searchArticles()">
-                    </div>
-                    <div id="search-results"></div>
-                </div>
+                <div id="create-message" style="margin-top: 16px;"></div>
             </div>
         </div>
 
         <!-- 個人頁面 -->
         <div id="profile" class="page">
-            <div style="background: white; border-radius: 8px; padding: 24px;">
-                <h1>個人頁面</h1>
-                <div id="profile-content" style="margin-top: 16px;"></div>
-            </div>
+            <button class="back-btn" onclick="showPage('home')">← 返回</button>
+            <div id="profile-content"></div>
         </div>
     </div>
 
     <script>
         // API 配置
-        const API_URL = 'https://script.google.com/macros/s/AKfycbyZ2uCTcQ-YJk4Xpi-q6_0cgWLPgIj9rK-jX6PW-Fjzg6KRu-W1RhUBaxSC48VZLMoUYQ/exec';
+        const API_URL = 'https://script.google.com/macros/s/AKfycbxU9WC5IqH1aBODvAeaOIuqjiE24haIbXNUd36yWUMzB12StUgRgwqo_uIJbv10RQha/exec';
         let currentUser = null;
         let allArticles = [];
         let allBoards = [];
@@ -606,6 +591,7 @@
                 return result.data || result;
             } catch (error) {
                 console.error('API 錯誤:', error);
+                alert('網絡錯誤，請重試');
                 return null;
             }
         }
@@ -621,6 +607,7 @@
                 return result.data || result;
             } catch (error) {
                 console.error('API 錯誤:', error);
+                alert('網絡錯誤，請重試');
                 return null;
             }
         }
@@ -632,7 +619,6 @@
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
 
-                // 驗證登入
             const result = await callPostAPI('verifyLogin', {
                 email: email,
                 password: password
@@ -645,7 +631,7 @@
                 showPage('home');
                 loadHome();
             } else {
-                alert(result && result.message ? result.message : '登入失敗，請檢查電子郵件和密碼');
+                alert(result && result.message ? result.message : '登入失敗');
             }
         }
 
@@ -666,13 +652,15 @@
             const result = await callPostAPI('createUser', {
                 name: name,
                 email: email,
-                password: password,
-                openId: 'user-' + Date.now()
+                password: password
             });
 
-            if (result && result.id) {
+            if (result && result.success) {
                 alert('註冊成功，請登入');
+                document.getElementById('register-email').value = email;
+                document.getElementById('register-password').value = '';
                 showPage('login');
+                document.getElementById('login-email').value = email;
             } else {
                 alert('註冊失敗，請重試');
             }
@@ -689,11 +677,9 @@
         // 更新 UI
         function updateUI() {
             const header = document.getElementById('header');
-            const logoutBtn = document.getElementById('logout-btn');
 
             if (currentUser) {
                 header.style.display = 'block';
-                logoutBtn.textContent = `登出 (${currentUser.name})`;
             } else {
                 header.style.display = 'none';
             }
@@ -701,7 +687,6 @@
 
         // 顯示頁面
         function showPage(pageName) {
-            // 檢查是否需要登入
             if (pageName !== 'login' && pageName !== 'register' && !currentUser) {
                 showPage('login');
                 return;
@@ -724,14 +709,11 @@
         // 載入首頁
         async function loadHome() {
             const container = document.getElementById('articles-container');
-
             container.innerHTML = '<div class="loading">載入文章中...</div>';
 
-            // 載入文章
             const articles = await callGetAPI('getHotArticles', { limit: 20 });
             allArticles = articles || [];
 
-            // 載入看板
             const boards = await callGetAPI('getAllBoards');
             allBoards = boards || [];
 
@@ -741,23 +723,21 @@
                 container.innerHTML = articles.map(article => `
                     <div class="article-card" onclick="viewArticle('${article.id}')">
                         <div style="margin-bottom: 8px;">
-                            <span class="article-board">${getBoardName(article.boardId)}</span>
+                            <span class="article-board">${getBoardName(article.board_id)}</span>
                         </div>
                         <div class="article-title">${article.title}</div>
                         <div class="article-excerpt">${(article.content || '').substring(0, 100)}...</div>
                         <div class="article-footer">
-                            <span>${new Date(article.createdAt).toLocaleDateString('zh-TW')}</span>
+                            <span>${new Date(article.created_at).toLocaleDateString('zh-TW')}</span>
                             <div class="article-stats">
-                                <span>👍 ${article.likeCount || 0}</span>
-                                <span>💬 ${article.commentCount || 0}</span>
-                                <span>👁️ ${article.viewCount || 0}</span>
+                                <span>👍 ${article.likes_count || 0}</span>
+                                <span>💬 ${article.comments_count || 0}</span>
                             </div>
                         </div>
                     </div>
                 `).join('');
             }
 
-            // 載入看板
             const boardsContainer = document.getElementById('boards-container');
             if (boards && boards.length > 0) {
                 boardsContainer.innerHTML = boards.map(board => `
@@ -789,67 +769,69 @@
                 <div class="article-detail">
                     <h1>${article.title}</h1>
                     <div class="meta">
-                        <span>${new Date(article.createdAt).toLocaleDateString('zh-TW')}</span>
-                        <span>👁️ ${article.viewCount || 0} 次瀏覽</span>
+                        <span>${new Date(article.created_at).toLocaleDateString('zh-TW')}</span>
                     </div>
                     <div class="content">${article.content}</div>
                     <div style="display: flex; gap: 16px; padding-top: 16px; border-top: 1px solid #e0e0e0;">
-                        <button style="background: white; border: 1px solid #e0e0e0; padding: 8px 16px; border-radius: 4px; cursor: pointer;">👍 ${article.likeCount || 0}</button>
-                        <button style="background: white; border: 1px solid #e0e0e0; padding: 8px 16px; border-radius: 4px; cursor: pointer;">⭐ 收藏</button>
+                        <button style="background: white; border: 1px solid #e0e0e0; padding: 8px 16px; border-radius: 4px; cursor: pointer;" onclick="likeArticle('${article.id}')">👍 ${article.likes_count || 0}</button>
                     </div>
                 </div>
 
                 <div class="comments-section">
-                    <h2>留言 (${article.commentCount || 0})</h2>
-                    ${comments && comments.length > 0 ? comments.map(comment => `
-                        <div class="comment">
-                            <div class="comment-author">
-                                <strong>${comment.authorName || '匿名用戶'}</strong>
-                            </div>
-                            <div class="comment-content">${comment.content}</div>
-                            <div class="comment-time">${new Date(comment.createdAt).toLocaleDateString('zh-TW')} · 👍 ${comment.likeCount || 0}</div>
+                    <h2>留言 (${comments ? comments.length : 0})</h2>
+                    <form onsubmit="submitComment(event, '${article.id}')" style="margin-bottom: 20px;">
+                        <div class="form-group">
+                            <textarea id="comment-input" placeholder="輸入留言..." required style="min-height: 80px;"></textarea>
                         </div>
-                    `).join('') : '<p style="color: #999;">還沒有留言</p>'}
+                        <button type="submit" class="submit-btn">發送</button>
+                    </form>
+                    <div id="comments-list">
+                        ${comments && comments.length > 0 ? comments.map(comment => `
+                            <div class="comment">
+                                <div class="comment-author">${comment.author_id}</div>
+                                <div class="comment-content">${comment.content}</div>
+                                <div class="comment-time">${new Date(comment.created_at).toLocaleString('zh-TW')}</div>
+                            </div>
+                        `).join('') : '<p style="color: #999;">還沒有留言</p>'}
+                    </div>
                 </div>
             `;
 
-            showPage('article-detail');
+            showPage('article');
         }
 
-        // 查看看板
-        async function viewBoard(boardId) {
-            const board = allBoards.find(b => b.id === boardId);
-            if (!board) {
-                alert('看板不存在');
-                return;
-            }
+        // 提交留言
+        async function submitComment(event, articleId) {
+            event.preventDefault();
 
-            const articles = await callGetAPI('getBoardArticles', { boardId: board.id, limit: 20 });
+            const content = document.getElementById('comment-input').value;
 
-            const container = document.getElementById('articles-container');
-            if (articles && articles.length > 0) {
-                container.innerHTML = articles.map(article => `
-                    <div class="article-card" onclick="viewArticle('${article.id}')">
-                        <div style="margin-bottom: 8px;">
-                            <span class="article-board">${board.name}</span>
-                        </div>
-                        <div class="article-title">${article.title}</div>
-                        <div class="article-excerpt">${(article.content || '').substring(0, 100)}...</div>
-                        <div class="article-footer">
-                            <span>${new Date(article.createdAt).toLocaleDateString('zh-TW')}</span>
-                            <div class="article-stats">
-                                <span>👍 ${article.likeCount || 0}</span>
-                                <span>💬 ${article.commentCount || 0}</span>
-                                <span>👁️ ${article.viewCount || 0}</span>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
+            const result = await callPostAPI('createComment', {
+                content: content,
+                author_id: currentUser.id,
+                article_id: articleId
+            });
+
+            if (result && result.success) {
+                document.getElementById('comment-input').value = '';
+                viewArticle(articleId);
             } else {
-                container.innerHTML = '<div class="empty-state"><h2>還沒有文章</h2></div>';
+                alert('留言失敗，請重試');
             }
+        }
 
-            showPage('home');
+        // 按讚文章
+        async function likeArticle(articleId) {
+            const result = await callPostAPI('likeArticle', {
+                userId: currentUser.id,
+                articleId: articleId
+            });
+
+            if (result && result.success) {
+                viewArticle(articleId);
+            } else {
+                alert(result && result.message ? result.message : '按讚失敗');
+            }
         }
 
         // 載入看板列表（用於發布文章）
@@ -873,70 +855,28 @@
             const title = document.getElementById('title').value;
             const boardId = document.getElementById('board').value;
             const content = document.getElementById('content').value;
-            const messageDiv = document.getElementById('create-message');
 
             if (!title || !boardId || !content) {
-                messageDiv.innerHTML = '<div class="error">請填寫所有欄位</div>';
+                alert('請填寫所有欄位');
                 return;
             }
-
-            messageDiv.innerHTML = '<div class="loading">發布中...</div>';
 
             const result = await callPostAPI('createArticle', {
                 title,
                 content,
-                boardId,
-                authorId: currentUser.id,
-                authorName: currentUser.name
+                board_id: boardId,
+                author_id: currentUser.id
             });
 
-            if (result && typeof result === 'string' && result.length > 0) {
-                messageDiv.innerHTML = '<div class="success">文章發布成功！</div>';
-                document.getElementById('create-form').reset();
-                setTimeout(() => {
-                    showPage('home');
-                }, 1500);
+            if (result && result.success) {
+                alert('文章發布成功！');
+                document.getElementById('title').value = '';
+                document.getElementById('content').value = '';
+                document.getElementById('board').value = '';
+                showPage('home');
+                loadHome();
             } else {
-                messageDiv.innerHTML = '<div class="error">發布失敗，請重試</div>';
-            }
-        }
-
-        // 搜尋文章
-        async function searchArticles() {
-            const keyword = document.getElementById('search-input').value;
-            const resultsDiv = document.getElementById('search-results');
-
-            if (!keyword) {
-                resultsDiv.innerHTML = '';
-                return;
-            }
-
-            resultsDiv.innerHTML = '<div class="loading">搜尋中...</div>';
-
-            const results = allArticles.filter(a =>
-                a.title.includes(keyword) || a.content.includes(keyword)
-            );
-
-            if (results.length === 0) {
-                resultsDiv.innerHTML = '<div class="empty-state"><h2>沒有找到結果</h2></div>';
-            } else {
-                resultsDiv.innerHTML = results.map(article => `
-                    <div class="article-card" onclick="viewArticle('${article.id}')">
-                        <div style="margin-bottom: 8px;">
-                            <span class="article-board">${getBoardName(article.boardId)}</span>
-                        </div>
-                        <div class="article-title">${article.title}</div>
-                        <div class="article-excerpt">${(article.content || '').substring(0, 100)}...</div>
-                        <div class="article-footer">
-                            <span>${new Date(article.createdAt).toLocaleDateString('zh-TW')}</span>
-                            <div class="article-stats">
-                                <span>👍 ${article.likeCount || 0}</span>
-                                <span>💬 ${article.commentCount || 0}</span>
-                                <span>👁️ ${article.viewCount || 0}</span>
-                            </div>
-                        </div>
-                    </div>
-                `).join('');
+                alert('發布失敗，請重試');
             }
         }
 
@@ -952,24 +892,24 @@
             const userArticles = await callGetAPI('getUserArticles', { userId: currentUser.id });
 
             profileContent.innerHTML = `
-                <div style="margin-bottom: 24px;">
+                <div class="profile-section">
                     <h2>用戶資訊</h2>
-                    <p><strong>名稱：</strong> ${currentUser.name}</p>
-                    <p><strong>電子郵件：</strong> ${currentUser.email || '未設定'}</p>
-                    <p><strong>加入時間：</strong> ${new Date(currentUser.createdAt).toLocaleDateString('zh-TW')}</p>
+                    <div class="profile-item"><strong>名稱：</strong> ${currentUser.name}</div>
+                    <div class="profile-item"><strong>電子郵件：</strong> ${currentUser.email}</div>
+                    <div class="profile-item"><strong>加入時間：</strong> ${new Date(currentUser.created_at).toLocaleDateString('zh-TW')}</div>
                 </div>
 
-                <div>
+                <div class="profile-section">
                     <h2>我的文章 (${userArticles ? userArticles.length : 0})</h2>
                     ${userArticles && userArticles.length > 0 ? userArticles.map(article => `
                         <div class="article-card" onclick="viewArticle('${article.id}')">
                             <div class="article-title">${article.title}</div>
                             <div class="article-excerpt">${(article.content || '').substring(0, 100)}...</div>
                             <div class="article-footer">
-                                <span>${new Date(article.createdAt).toLocaleDateString('zh-TW')}</span>
+                                <span>${new Date(article.created_at).toLocaleDateString('zh-TW')}</span>
                                 <div class="article-stats">
-                                    <span>👍 ${article.likeCount || 0}</span>
-                                    <span>💬 ${article.commentCount || 0}</span>
+                                    <span>👍 ${article.likes_count || 0}</span>
+                                    <span>💬 ${article.comments_count || 0}</span>
                                 </div>
                             </div>
                         </div>
