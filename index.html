@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BayCard - 社群討論平台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        header {
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 12px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: bold;
+            color: #000;
+        }
+
+        nav {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        nav button, nav a {
+            background: none;
+            border: none;
+            text-decoration: none;
+            color: #666;
+            font-size: 14px;
+            cursor: pointer;
+            transition: color 0.3s;
+            padding: 0;
+        }
+
+        nav button:hover, nav a:hover {
+            color: #000;
+        }
+
+        .btn-login {
+            background: #000 !important;
+            color: white !important;
+            padding: 8px 16px !important;
+            border-radius: 4px !important;
+        }
+
+        .btn-login:hover {
+            background: #333 !important;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 16px;
+        }
+
+        .main {
+            display: grid;
+            grid-template-columns: 1fr 200px;
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .boards-sidebar {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            height: fit-content;
+            position: sticky;
+            top: 70px;
+        }
+
+        .boards-sidebar h3 {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .board-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .board-item:last-child {
+            border-bottom: none;
+        }
+
+        .board-item a {
+            text-decoration: none;
+            color: #666;
+            display: block;
+            padding: 8px 0;
+            font-size: 13px;
+            transition: color 0.3s;
+            cursor: pointer;
+        }
+
+        .board-item a:hover {
+            color: #000;
+        }
+
+        .content {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .article-card {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            border: 1px solid #e0e0e0;
+            transition: box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .article-card:hover {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .article-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .article-board {
+            display: inline-block;
+            background: #f0f0f0;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .article-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin: 8px 0;
+            color: #000;
+        }
+
+        .article-excerpt {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .article-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .article-stats {
+            display: flex;
+            gap: 16px;
+        }
+
+        .create-article-btn {
+            background: #000;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-bottom: 16px;
+            transition: background 0.3s;
+        }
+
+        .create-article-btn:hover {
+            background: #333;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .article-detail {
+            background: white;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 16px;
+        }
+
+        .article-detail h1 {
+            font-size: 28px;
+            margin-bottom: 16px;
+        }
+
+        .article-detail .meta {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .article-detail .content {
+            font-size: 16px;
+            line-height: 1.8;
+            margin-bottom: 24px;
+        }
+
+        .comments-section {
+            background: white;
+            border-radius: 8px;
+            padding: 24px;
+        }
+
+        .comments-section h2 {
+            font-size: 18px;
+            margin-bottom: 16px;
+        }
+
+        .comment {
+            border-bottom: 1px solid #f0f0f0;
+            padding: 16px 0;
+        }
+
+        .comment:last-child {
+            border-bottom: none;
+        }
+
+        .comment-author {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .comment-content {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .comment-time {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .back-btn {
+            background: white;
+            border: 1px solid #e0e0e0;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 16px;
+            font-size: 14px;
+        }
+
+        .back-btn:hover {
+            background: #f5f5f5;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 200px;
+        }
+
+        .submit-btn {
+            background: #000;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .submit-btn:hover {
+            background: #333;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px 16px;
+            color: #999;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 16px;
+            color: #999;
+        }
+
+        .error {
+            background: #fee;
+            border: 1px solid #fcc;
+            color: #c00;
+            padding: 12px 16px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+        }
+
+        .success {
+            background: #efe;
+            border: 1px solid #cfc;
+            color: #060;
+            padding: 12px 16px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .main {
+                grid-template-columns: 1fr;
+            }
+
+            .boards-sidebar {
+                display: none;
+            }
+
+            nav {
+                gap: 12px;
+            }
+
+            .header-container {
+                flex-wrap: wrap;
+            }
+
+            .article-detail {
+                padding: 16px;
+            }
+
+            .article-detail h1 {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo">BayCard</div>
+            <nav>
+                <button onclick="showPage('home')">首頁</button>
+                <button onclick="showPage('search')">搜尋</button>
+                <button onclick="showPage('profile')">個人</button>
+                <button class="btn-login" onclick="showPage('create')">+ 發布</button>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- 首頁 -->
+        <div id="home" class="page active">
+            <div class="main">
+                <div class="content">
+                    <div id="home-message"></div>
+                    <div id="articles-container">
+                        <div class="loading">載入中...</div>
+                    </div>
+                </div>
+
+                <div class="boards-sidebar">
+                    <h3>看板</h3>
+                    <div id="boards-container"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 文章詳情 -->
+        <div id="article-detail" class="page">
+            <button class="back-btn" onclick="showPage('home')">← 返回</button>
+            <div id="article-content"></div>
+        </div>
+
+        <!-- 發布文章 -->
+        <div id="create" class="page">
+            <button class="back-btn" onclick="showPage('home')">← 返回</button>
+            <div style="background: white; border-radius: 8px; padding: 24px;">
+                <h1 style="margin-bottom: 24px;">發布文章</h1>
+                <div id="create-message"></div>
+                <form id="create-form" onsubmit="submitArticle(event)">
+                    <div class="form-group">
+                        <label>標題 *</label>
+                        <input type="text" id="title" required placeholder="輸入文章標題">
+                    </div>
+                    <div class="form-group">
+                        <label>看板 *</label>
+                        <select id="board" required>
+                            <option value="">載入看板中...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>內容 *</label>
+                        <textarea id="content" required placeholder="輸入文章內容"></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">發布文章</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- 搜尋 -->
+        <div id="search" class="page">
+            <div class="main">
+                <div class="content">
+                    <div style="background: white; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
+                        <input type="text" id="search-input" placeholder="搜尋文章..." style="width: 100%; padding: 12px; border: 1px solid #e0e0e0; border-radius: 4px; font-size: 14px;" onkeyup="searchArticles()">
+                    </div>
+                    <div id="search-results"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 個人頁面 -->
+        <div id="profile" class="page">
+            <div style="background: white; border-radius: 8px; padding: 24px;">
+                <h1>個人頁面</h1>
+                <p style="margin-top: 16px;">功能開發中...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API 配置
+        const API_URL = 'https://script.google.com/macros/s/AKfycbyZ2uCTcQ-YJk4Xpi-q6_0cgWLPgIj9rK-jX6PW-Fjzg6KRu-W1RhUBaxSC48VZLMoUYQ/exec';
+        let allArticles = [];
+        let allBoards = [];
+
+        // 調用 API (GET)
+        async function callGetAPI(action, params = {}) {
+            try {
+                const queryParams = new URLSearchParams({ action, ...params });
+                const response = await fetch(`${API_URL}?${queryParams}`);
+                const result = await response.json();
+                return result.data || result;
+            } catch (error) {
+                console.error('API 錯誤:', error);
+                return null;
+            }
+        }
+
+        // 調用 API (POST)
+        async function callPostAPI(action, params = {}) {
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action, params })
+                });
+                const result = await response.json();
+                return result.data || result;
+            } catch (error) {
+                console.error('API 錯誤:', error);
+                return null;
+            }
+        }
+
+        // 顯示頁面
+        function showPage(pageName) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById(pageName).classList.add('active');
+
+            if (pageName === 'home') {
+                loadHome();
+            } else if (pageName === 'create') {
+                loadBoardsForCreate();
+            }
+        }
+
+        // 載入首頁
+        async function loadHome() {
+            const container = document.getElementById('articles-container');
+            const messageDiv = document.getElementById('home-message');
+            
+            container.innerHTML = '<div class="loading">載入文章中...</div>';
+            messageDiv.innerHTML = '';
+
+            // 載入文章
+            const articles = await callGetAPI('getHotArticles', { limit: 20 });
+            allArticles = articles || [];
+
+            // 載入看板
+            const boards = await callGetAPI('getAllBoards');
+            allBoards = boards || [];
+
+            if (!articles || articles.length === 0) {
+                container.innerHTML = '<div class="empty-state"><h2>還沒有文章</h2><p>成為第一個發布文章的人吧！</p></div>';
+            } else {
+                container.innerHTML = articles.map(article => `
+                    <div class="article-card" onclick="viewArticle('${article.id}')">
+                        <div class="article-header">
+                            <span class="article-board">${getBoardName(article.boardId)}</span>
+                        </div>
+                        <div class="article-title">${article.title}</div>
+                        <div class="article-excerpt">${(article.content || '').substring(0, 100)}...</div>
+                        <div class="article-footer">
+                            <span>${new Date(article.createdAt).toLocaleDateString('zh-TW')}</span>
+                            <div class="article-stats">
+                                <span>👍 ${article.likeCount || 0}</span>
+                                <span>💬 ${article.commentCount || 0}</span>
+                                <span>👁️ ${article.viewCount || 0}</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // 載入看板
+            const boardsContainer = document.getElementById('boards-container');
+            if (boards && boards.length > 0) {
+                boardsContainer.innerHTML = boards.map(board => `
+                    <div class="board-item"><a onclick="viewBoard('${board.id}')">${board.name}</a></div>
+                `).join('');
+            } else {
+                boardsContainer.innerHTML = '<div style="color: #999; font-size: 12px;">還沒有看板</div>';
+            }
+        }
+
+        // 獲取看板名稱
+        function getBoardName(boardId) {
+            const board = allBoards.find(b => b.id === boardId);
+            return board ? board.name : '未知看板';
+        }
+
+        // 查看文章
+        async function viewArticle(articleId) {
+            const article = allArticles.find(a => a.id === articleId);
+            if (!article) {
+                alert('文章不存在');
+                return;
+            }
+
+            const comments = await callGetAPI('getArticleComments', { articleId: article.id });
+
+            const content = document.getElementById('article-content');
+            content.innerHTML = `
+                <div class="article-detail">
+                    <h1>${article.title}</h1>
+                    <div class="meta">
+                        <span>${new Date(article.createdAt).toLocaleDateString('zh-TW')}</span>
+                        <span>👁️ ${article.viewCount || 0} 次瀏覽</span>
+                    </div>
+                    <div class="content">${article.content}</div>
+                    <div style="display: flex; gap: 16px; padding-top: 16px; border-top: 1px solid #e0e0e0;">
+                        <button style="background: white; border: 1px solid #e0e0e0; padding: 8px 16px; border-radius: 4px; cursor: pointer;">👍 ${article.likeCount || 0}</button>
+                        <button style="background: white; border: 1px solid #e0e0e0; padding: 8px 16px; border-radius: 4px; cursor: pointer;">⭐ 收藏</button>
+                    </div>
+                </div>
+
+                <div class="comments-section">
+                    <h2>留言 (${article.commentCount || 0})</h2>
+                    ${comments && comments.length > 0 ? comments.map(comment => `
+                        <div class="comment">
+                            <div class="comment-author">
+                                <strong>匿名用戶</strong>
+                            </div>
+                            <div class="comment-content">${comment.content}</div>
+                            <div class="comment-time">${new Date(comment.createdAt).toLocaleDateString('zh-TW')} · 👍 ${comment.likeCount || 0}</div>
+                        </div>
+                    `).join('') : '<p style="color: #999;">還沒有留言</p>'}
+                </div>
+            `;
+
+            showPage('article-detail');
+        }
+
+        // 查看看板
+        async function viewBoard(boardId) {
+            const board = allBoards.find(b => b.id === boardId);
+            if (!board) {
+                alert('看板不存在');
+                return;
+            }
+
+            const articles = await callGetAPI('getBoardArticles', { boardId: board.id, limit: 20 });
+
+            const container = document.getElementById('articles-container');
+            if (articles && articles.length > 0) {
+                container.innerHTML = articles.map(article => `
+                    <div class="article-card" onclick="viewArticle('${article.id}')">
+                        <div class="article-header">
+                            <span class="article-board">${board.name}</span>
+                        </div>
+                        <div class="article-title">${article.title}</div>
+                        <div class="article-excerpt">${(article.content || '').substring(0, 100)}...</div>
+                        <div class="article-footer">
+                            <span>${new Date(article.createdAt).toLocaleDateString('zh-TW')}</span>
+                            <div class="article-stats">
+                                <span>👍 ${article.likeCount || 0}</span>
+                                <span>💬 ${article.commentCount || 0}</span>
+                                <span>👁️ ${article.viewCount || 0}</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                container.innerHTML = '<div class="empty-state"><h2>還沒有文章</h2></div>';
+            }
+
+            showPage('home');
+        }
+
+        // 載入看板列表（用於發布文章）
+        async function loadBoardsForCreate() {
+            const select = document.getElementById('board');
+            const boards = await callGetAPI('getAllBoards');
+            
+            if (boards && boards.length > 0) {
+                select.innerHTML = '<option value="">選擇看板</option>' + boards.map(board => `
+                    <option value="${board.id}">${board.name}</option>
+                `).join('');
+            } else {
+                select.innerHTML = '<option value="">沒有可用的看板</option>';
+            }
+        }
+
+        // 提交文章
+        async function submitArticle(event) {
+            event.preventDefault();
+
+            const title = document.getElementById('title').value;
+            const boardId = document.getElementById('board').value;
+            const content = document.getElementById('content').value;
+            const messageDiv = document.getElementById('create-message');
+
+            if (!title || !boardId || !content) {
+                messageDiv.innerHTML = '<div class="error">請填寫所有欄位</div>';
+                return;
+            }
+
+            messageDiv.innerHTML = '<div class="loading">發布中...</div>';
+
+            const result = await callPostAPI('createArticle', {
+                title,
+                content,
+                boardId,
+                authorId: 'user-' + Date.now()
+            });
+
+            if (result && result.success) {
+                messageDiv.innerHTML = '<div class="success">文章發布成功！</div>';
+                document.getElementById('create-form').reset();
+                setTimeout(() => {
+                    showPage('home');
+                }, 1500);
+            } else {
+                messageDiv.innerHTML = '<div class="error">發布失敗，請重試</div>';
+            }
+        }
+
+        // 搜尋文章
+        async function searchArticles() {
+            const keyword = document.getElementById('search-input').value;
+            const resultsDiv = document.getElementById('search-results');
+
+            if (!keyword) {
+                resultsDiv.innerHTML = '';
+                return;
+            }
+
+            resultsDiv.innerHTML = '<div class="loading">搜尋中...</div>';
+
+            const results = allArticles.filter(a => 
+                a.title.includes(keyword) || a.content.includes(keyword)
+            );
+
+            if (results.length === 0) {
+                resultsDiv.innerHTML = '<div class="empty-state"><h2>沒有找到結果</h2></div>';
+            } else {
+                resultsDiv.innerHTML = results.map(article => `
+                    <div class="article-card" onclick="viewArticle('${article.id}')">
+                        <div class="article-header">
+                            <span class="article-board">${getBoardName(article.boardId)}</span>
+                        </div>
+                        <div class="article-title">${article.title}</div>
+                        <div class="article-excerpt">${(article.content || '').substring(0, 100)}...</div>
+                        <div class="article-footer">
+                            <span>${new Date(article.createdAt).toLocaleDateString('zh-TW')}</span>
+                            <div class="article-stats">
+                                <span>👍 ${article.likeCount || 0}</span>
+                                <span>💬 ${article.commentCount || 0}</span>
+                                <span>👁️ ${article.viewCount || 0}</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // 初始化
+        window.addEventListener('load', () => {
+            loadHome();
+        });
+    </script>
+</body>
+</html>
