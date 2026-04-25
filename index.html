@@ -73,6 +73,18 @@
             background: #333 !important;
         }
 
+        .btn-logout {
+            background: #666 !important;
+            color: white !important;
+            padding: 8px 16px !important;
+            border-radius: 4px !important;
+        }
+
+        .user-info {
+            font-size: 14px;
+            color: #666;
+        }
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -208,6 +220,56 @@
 
         .page.active {
             display: block;
+        }
+
+        .login-page {
+            background: white;
+            border-radius: 8px;
+            padding: 40px;
+            max-width: 400px;
+            margin: 60px auto;
+            text-align: center;
+        }
+
+        .login-page h1 {
+            font-size: 28px;
+            margin-bottom: 24px;
+        }
+
+        .login-page .form-group {
+            margin-bottom: 16px;
+            text-align: left;
+        }
+
+        .login-page label {
+            display: block;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .login-page input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .login-page .submit-btn {
+            width: 100%;
+            background: #000;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .login-page .submit-btn:hover {
+            background: #333;
         }
 
         .article-detail {
@@ -384,6 +446,11 @@
             .article-detail h1 {
                 font-size: 20px;
             }
+
+            .login-page {
+                padding: 24px;
+                margin: 40px auto;
+            }
         }
     </style>
 </head>
@@ -391,23 +458,44 @@
     <header>
         <div class="header-container">
             <div class="logo">BayCard</div>
-            <nav>
+            <nav id="nav-menu">
                 <button onclick="showPage('home')">首頁</button>
                 <button onclick="showPage('search')">搜尋</button>
                 <button onclick="showPage('profile')">個人</button>
                 <button class="btn-login" onclick="showPage('create')">+ 發布</button>
+                <button class="btn-logout" id="logout-btn" style="display: none;" onclick="logout()">登出</button>
             </nav>
         </div>
     </header>
 
     <div class="container">
+        <!-- 登入頁面 -->
+        <div id="login" class="page active">
+            <div class="login-page">
+                <h1>BayCard</h1>
+                <p style="color: #666; margin-bottom: 32px;">社群討論平台</p>
+                <form onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label>用戶名稱</label>
+                        <input type="text" id="login-name" required placeholder="輸入你的名稱">
+                    </div>
+                    <div class="form-group">
+                        <label>電子郵件（選填）</label>
+                        <input type="email" id="login-email" placeholder="輸入你的電子郵件">
+                    </div>
+                    <button type="submit" class="submit-btn">登入</button>
+                </form>
+            </div>
+        </div>
+
         <!-- 首頁 -->
-        <div id="home" class="page active">
+        <div id="home" class="page">
             <div class="main">
                 <div class="content">
                     <div id="home-message"></div>
+                    <button class="create-article-btn" onclick="showPage('create')">+ 發布文章</button>
                     <div id="articles-container">
-                        <div class="loading">載入中...</div>
+                        <div class="loading">載入文章中...</div>
                     </div>
                 </div>
 
@@ -466,7 +554,7 @@
         <div id="profile" class="page">
             <div style="background: white; border-radius: 8px; padding: 24px;">
                 <h1>個人頁面</h1>
-                <p style="margin-top: 16px;">功能開發中...</p>
+                <div id="profile-content" style="margin-top: 16px;"></div>
             </div>
         </div>
     </div>
@@ -474,8 +562,20 @@
     <script>
         // API 配置
         const API_URL = 'https://script.google.com/macros/s/AKfycbyZ2uCTcQ-YJk4Xpi-q6_0cgWLPgIj9rK-jX6PW-Fjzg6KRu-W1RhUBaxSC48VZLMoUYQ/exec';
+        let currentUser = null;
         let allArticles = [];
         let allBoards = [];
+
+        // 從 localStorage 恢復用戶
+        function restoreUser() {
+            const saved = localStorage.getItem('baycard_user');
+            if (saved) {
+                currentUser = JSON.parse(saved);
+                updateNavigation();
+                showPage('home');
+                loadHome();
+            }
+        }
 
         // 調用 API (GET)
         async function callGetAPI(action, params = {}) {
@@ -505,8 +605,60 @@
             }
         }
 
+        // 處理登入
+        async function handleLogin(event) {
+            event.preventDefault();
+
+            const name = document.getElementById('login-name').value;
+            const email = document.getElementById('login-email').value;
+
+            // 創建或獲取用戶
+            const user = await callPostAPI('createOrGetUser', {
+                name: name,
+                email: email || '',
+                openId: 'user-' + Date.now()
+            });
+
+            if (user && user.id) {
+                currentUser = user;
+                localStorage.setItem('baycard_user', JSON.stringify(user));
+                updateNavigation();
+                showPage('home');
+                loadHome();
+            } else {
+                alert('登入失敗，請重試');
+            }
+        }
+
+        // 登出
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('baycard_user');
+            updateNavigation();
+            showPage('login');
+        }
+
+        // 更新導航欄
+        function updateNavigation() {
+            const logoutBtn = document.getElementById('logout-btn');
+            const userInfo = document.querySelector('.user-info');
+
+            if (currentUser) {
+                logoutBtn.style.display = 'block';
+                logoutBtn.textContent = `登出 (${currentUser.name})`;
+            } else {
+                logoutBtn.style.display = 'none';
+            }
+        }
+
         // 顯示頁面
         function showPage(pageName) {
+            // 檢查是否需要登入
+            if (pageName !== 'login' && !currentUser) {
+                showPage('login');
+                return;
+            }
+
             document.querySelectorAll('.page').forEach(page => {
                 page.classList.remove('active');
             });
@@ -516,6 +668,8 @@
                 loadHome();
             } else if (pageName === 'create') {
                 loadBoardsForCreate();
+            } else if (pageName === 'profile') {
+                loadProfile();
             }
         }
 
@@ -523,7 +677,7 @@
         async function loadHome() {
             const container = document.getElementById('articles-container');
             const messageDiv = document.getElementById('home-message');
-            
+
             container.innerHTML = '<div class="loading">載入文章中...</div>';
             messageDiv.innerHTML = '';
 
@@ -604,7 +758,7 @@
                     ${comments && comments.length > 0 ? comments.map(comment => `
                         <div class="comment">
                             <div class="comment-author">
-                                <strong>匿名用戶</strong>
+                                <strong>${comment.authorName || '匿名用戶'}</strong>
                             </div>
                             <div class="comment-content">${comment.content}</div>
                             <div class="comment-time">${new Date(comment.createdAt).toLocaleDateString('zh-TW')} · 👍 ${comment.likeCount || 0}</div>
@@ -656,7 +810,7 @@
         async function loadBoardsForCreate() {
             const select = document.getElementById('board');
             const boards = await callGetAPI('getAllBoards');
-            
+
             if (boards && boards.length > 0) {
                 select.innerHTML = '<option value="">選擇看板</option>' + boards.map(board => `
                     <option value="${board.id}">${board.name}</option>
@@ -686,7 +840,8 @@
                 title,
                 content,
                 boardId,
-                authorId: 'user-' + Date.now()
+                authorId: currentUser.id,
+                authorName: currentUser.name
             });
 
             if (result && result.success) {
@@ -712,7 +867,7 @@
 
             resultsDiv.innerHTML = '<div class="loading">搜尋中...</div>';
 
-            const results = allArticles.filter(a => 
+            const results = allArticles.filter(a =>
                 a.title.includes(keyword) || a.content.includes(keyword)
             );
 
@@ -739,9 +894,47 @@
             }
         }
 
+        // 載入個人頁面
+        async function loadProfile() {
+            const profileContent = document.getElementById('profile-content');
+
+            if (!currentUser) {
+                profileContent.innerHTML = '<p>請先登入</p>';
+                return;
+            }
+
+            const userArticles = await callGetAPI('getUserArticles', { userId: currentUser.id });
+
+            profileContent.innerHTML = `
+                <div style="margin-bottom: 24px;">
+                    <h2>用戶資訊</h2>
+                    <p><strong>名稱：</strong> ${currentUser.name}</p>
+                    <p><strong>電子郵件：</strong> ${currentUser.email || '未設定'}</p>
+                    <p><strong>加入時間：</strong> ${new Date(currentUser.createdAt).toLocaleDateString('zh-TW')}</p>
+                </div>
+
+                <div>
+                    <h2>我的文章 (${userArticles ? userArticles.length : 0})</h2>
+                    ${userArticles && userArticles.length > 0 ? userArticles.map(article => `
+                        <div class="article-card" onclick="viewArticle('${article.id}')">
+                            <div class="article-title">${article.title}</div>
+                            <div class="article-excerpt">${(article.content || '').substring(0, 100)}...</div>
+                            <div class="article-footer">
+                                <span>${new Date(article.createdAt).toLocaleDateString('zh-TW')}</span>
+                                <div class="article-stats">
+                                    <span>👍 ${article.likeCount || 0}</span>
+                                    <span>💬 ${article.commentCount || 0}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('') : '<p style="color: #999;">還沒有發布文章</p>'}
+                </div>
+            `;
+        }
+
         // 初始化
         window.addEventListener('load', () => {
-            loadHome();
+            restoreUser();
         });
     </script>
 </body>
